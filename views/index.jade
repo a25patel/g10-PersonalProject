@@ -3,3 +3,40 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  
+  p
+    a(href = '/directory' id='directory') Directory 
+  //- p 
+  //-   a(href='/login' id='login') Login 
+  
+  form(action='/upload' method='post')
+    div.uploadNew
+      h1 Upload an Image File 
+      input(type='file' id='newImage' name='newImage')
+      input(type='submit' id ='submit' value='upload') 
+      
+  form(action='/login' method='post')
+    div.login
+      h1 Login 
+      label(for='email') Login Email:  
+      input(type='email' id='email' name='email' size='35' placeholder='name@example.com')
+      label(for='password') Password:  
+      input(type='password' id='password' name='password' placeholder='********') 
+      input(type='submit' id ='submit' value='Login') 
+
+  
+  form(action='/create' method='post')
+    div.createAcct 
+      h1 Create a New Account 
+      label(for='newEmail') Enter Email 
+      input(type='email' id='newEmail' name='newEmail' size='35' placeholder='name@example.com')
+      label(for='newPassword') Password:
+      input(type='password' id='newPassword' name='newPassword' placeholder='********')
+      label(for='confirm') Confirm Password: 
+      input(type='password' id='confirm' name='confirm' placeholder='********') 
+      input(type='submit' id ='submit' value='Create Account') 
+
+    
+    
+    
+    
