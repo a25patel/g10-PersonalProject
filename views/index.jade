@@ -9,6 +9,11 @@ block content
   //- p 
   //-   a(href='/login' id='login') Login 
   
+  if(errors)
+    ul
+      for val in errors 
+        li= val
+      
   form(action='/upload' method='post')
     div.uploadNew
       h1 Upload an Image File 
@@ -18,8 +23,8 @@ block content
   form(action='/login' method='post')
     div.login
       h1 Login 
-      label(for='email') Login Email:  
-      input(type='email' id='email' name='email' size='35' placeholder='name@example.com')
+      label(for='username') Username:  
+      input(type='text' id='username' name='username' size='35' placeholder='name1234')
       label(for='password') Password:  
       input(type='password' id='password' name='password' placeholder='********') 
       input(type='submit' id ='submit' value='Login') 
@@ -28,8 +33,8 @@ block content
   form(action='/create' method='post')
     div.createAcct 
       h1 Create a New Account 
-      label(for='newEmail') Enter Email 
-      input(type='email' id='newEmail' name='newEmail' size='35' placeholder='name@example.com')
+      label(for='newUsername') Username: 
+      input(type='text' id='newUsername' name='newUsername' size='35' placeholder='name1234')
       label(for='newPassword') Password:
       input(type='password' id='newPassword' name='newPassword' placeholder='********')
       label(for='confirm') Confirm Password: 
