@@ -6,18 +6,16 @@ block content
   
   p
     a(href = '/directory' id='directory') Directory 
-  //- p 
-  //-   a(href='/login' id='login') Login 
-  
+
   if(errors)
     ul
       for val in errors 
         li= val
       
-  form(action='/upload' method='post')
-    div.uploadNew
-      h1 Upload an Image File 
-      input(type='file' id='newImage' name='newImage')
+  form(action='/uploadURL' method='post')
+    div.uploadURL
+      h1 Upload an Image URL
+      input(type='text' id='newImage' name='newImage' size ='55')
       input(type='submit' id ='submit' value='upload') 
       
   form(action='/login' method='post')

@@ -3,13 +3,23 @@ var router = express.Router();
 var db = require('monk')('localhost/colorPalettes');
 var paletteCollection = db.get('palettes')
 var bcrypt = require('bcryptjs');
-//var key = process.env.PIVOTAL_API;
+var unirest = require('unirest')
+var key = process.env.COLORTAG_API;
 
 
 /* GET Index page. */
 router.get('/', function(req, res, next) {
-  paletteCollection.find({}, function(err, palettes){
-    res.render('index', { title: 'Color Combos' });
+  // API Documentation
+  // These code snippets use an open-source library. http://unirest.io/nodejs
+  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.imageURL)
+  .header("X-Mashape-Key", key)
+  .header("Accept", "application/json")
+  .end(function (result) {
+    console.log(result.status, result.headers, result.body);
+    // Find Palette Database
+    paletteCollection.find({}, function(err, palettes){
+      res.render('index', { title: 'Color Combos' , colors: result.body});
+    });
   });
 });
 
@@ -18,11 +28,12 @@ router.get('/home', function(req,res,next){
   res.render('home');
 });
 
+// Grab Directory Page
 router.get('/directory', function(req,res,next){
-  res.render('directory'); 
+  res.render('directory');
 })
 
-// Check Validations for Create Account
+// ************* Check Validations for Create Account **********************
 router.post('/create', function(req, res, next){
   var array=[];
   // Username Validations - blank
@@ -50,7 +61,6 @@ router.post('/create', function(req, res, next){
 
   // if Errors, render index page with errors
   if(array.length > 0){
-    console.log(array);
     res.render('', { title: 'Color Combos', errors: array})
   } //ELSE
   else {
@@ -76,44 +86,51 @@ router.post('/create', function(req, res, next){
   }
 });
 
+// ********************* Validations for LOGIN Page **************************
 
-// Validations for LOGIN Page
 router.post('/login', function(req, res, next){
+  // Username cannot be blank
   var array = [];
   if (req.body.username === ''){
     array.push('Username cannot be blank')
   }
+  // Password cannot be blank
   if (req.body.password === ''){
     array.push('Password cannot be blank')
   }
+  // if errors, print them!
   if (array.length > 0){
     res.render('' , {title: 'Color Combos' , errors: array})
   } else {
-
-    // paletteCollection.find({}, function(err, palettes){
-    //   var array = [];
-    //   var userArray =[];
-    //   for(var i = 0; i< palettes.length; i++){
-    //     if (req.body.user != palettes[i].username){
-    //       userArray.push('Username does not exist')
-    //     }
-    //   }
-    //   array.push(userArray[0])
-    //   res.render('' , {title: 'Color Combos' , errors: array})
-    // })
-
     paletteCollection.findOne({username:req.body.username}, function(err,palettes){
       var array = [];
-      if(bcrypt.compareSync(req.body.password , palettes.password) === false){
+      // if username does not exist in database
+      if (!palettes){
+        array.push('Username does not exist')
+        res.render('', {title: 'Color Combos' , errors:array})
+        // check to see if password matches
+      } else if(bcrypt.compareSync(req.body.password , palettes.password)){
+        res.redirect('/home');
+      } else {
         array.push('Invalid Password')
         res.render('' , {title: 'Color Combos' , errors:array})
-      } else {
-        res.redirect('/home');
       }
     })
   }
-
-
-
 });
+
+// ********************* DIRECTORY API CALL ************************
+router.post('/upload' , function(req,res,next){
+  console.log(req.body);
+  unirest.post("https://apicloud-colortag.p.mashape.com/tag-file.json")
+  .header("X-Mashape-Key", key)
+  .attach("image", fs.createReadStream(req.body.upload))
+  .field("palette", "simple")
+  .field("sort", "relevance")
+  .end(function (result) {
+  console.log(result.status, result.headers, result.body);
+    res.redirect('/home');
+  });
+});
+
 module.exports = router;
