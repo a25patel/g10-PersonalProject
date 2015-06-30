@@ -12,10 +12,10 @@ block content
       for val in errors 
         li= val
       
-  form(action='/uploadURL' method='post')
-    div.uploadURL
+  form(action='/indexUploadURL' method='post')
+    div.indexUploadURL
       h1 Upload an Image URL
-      input(type='text' id='newImage' name='newImage' size ='55')
+      input(type='text' id='indexImageURL' name='indexImageURL' size ='55')
       input(type='submit' id ='submit' value='upload') 
       
   form(action='/login' method='post')
@@ -37,9 +37,13 @@ block content
       input(type='password' id='newPassword' name='newPassword' placeholder='********')
       label(for='confirm') Confirm Password: 
       input(type='password' id='confirm' name='confirm' placeholder='********') 
-      input(type='submit' id ='submit' value='Create Account') 
-
-    
-    
-    
-    
+      input(type='submit' id ='submit' value='Create Account')   
+  
+  
+  if colors
+    div.indexImage 
+      img(src = '#{image}')
+    div.indexImagePalette 
+      for color in colors 
+        div.hex(style={background: color })
+      p #{colors}

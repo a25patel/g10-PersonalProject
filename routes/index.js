@@ -6,6 +6,8 @@ var bcrypt = require('bcryptjs');
 var unirest = require('unirest')
 var key = process.env.COLORTAG_API;
 
+var imageUrlPalette = require('../public/javascripts/color.js')
+
 
 /* GET Index page. */
 router.get('/', function(req, res, next) {
@@ -18,20 +20,23 @@ router.get('/', function(req, res, next) {
     console.log(result.status, result.headers, result.body);
     // Find Palette Database
     paletteCollection.find({}, function(err, palettes){
-      res.render('index', { title: 'Color Combos' , colors: result.body});
+      res.render('index', { title: '24 Palettes' , colors: result.body});
     });
   });
 });
 
-// Grab the Home Page for Users once logged in
+// ************ Grab the Home Page for Users once logged in ***************
 router.get('/home', function(req,res,next){
   res.render('home');
 });
 
-// Grab Directory Page
+// ***************** Grab Directory Page *********************************
 router.get('/directory', function(req,res,next){
   res.render('directory');
 })
+
+
+// ##################### INDEX PAGE FUNCTIONS ! ##############################
 
 // ************* Check Validations for Create Account **********************
 router.post('/create', function(req, res, next){
@@ -61,7 +66,7 @@ router.post('/create', function(req, res, next){
 
   // if Errors, render index page with errors
   if(array.length > 0){
-    res.render('', { title: 'Color Combos', errors: array})
+    res.render('', { title: '24 Palettes', errors: array})
   } //ELSE
   else {
     // IF username already exists render errror
@@ -70,7 +75,7 @@ router.post('/create', function(req, res, next){
       for(var i =0; i< palettes.length; i++){
         if(req.body.newUsername.toUpperCase() === palettes[i].username.toUpperCase()){
           errorArray.push('Username ID already exists');
-          res.render('', {title: 'Color Combos', errors: errorArray})
+          res.render('', {title: '24 Palettes', errors: errorArray})
         }
       }
       // if errorArray OR palettes length is 0, insert new user info into database
@@ -79,6 +84,7 @@ router.post('/create', function(req, res, next){
           username: req.body.newUsername,
           password: bcrypt.hashSync(req.body.newPassword, 8)
         });
+        res.cookie('currentUser' , req.body.newUsername);
         res.redirect('/home');
       }
    });
@@ -100,37 +106,70 @@ router.post('/login', function(req, res, next){
   }
   // if errors, print them!
   if (array.length > 0){
-    res.render('' , {title: 'Color Combos' , errors: array})
+    res.render('' , {title: '24 Palettes' , errors: array})
   } else {
     paletteCollection.findOne({username:req.body.username}, function(err,palettes){
       var array = [];
       // if username does not exist in database
       if (!palettes){
         array.push('Username does not exist')
-        res.render('', {title: 'Color Combos' , errors:array})
+        res.render('', {title: '24 Palettes' , errors:array})
         // check to see if password matches
       } else if(bcrypt.compareSync(req.body.password , palettes.password)){
+        res.cookie('currentUser' , req.body.username);
         res.redirect('/home');
       } else {
         array.push('Invalid Password')
-        res.render('' , {title: 'Color Combos' , errors:array})
+        res.render('' , {title: '24 Palettes' , errors:array})
       }
     })
   }
 });
 
-// ********************* DIRECTORY API CALL ************************
-router.post('/upload' , function(req,res,next){
-  console.log(req.body);
-  unirest.post("https://apicloud-colortag.p.mashape.com/tag-file.json")
+// ************************* INDEX URL API CALL **************************
+router.post('/indexUploadURL', function(req, res, next) {
+  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.indexImageURL)
   .header("X-Mashape-Key", key)
-  .attach("image", fs.createReadStream(req.body.upload))
-  .field("palette", "simple")
-  .field("sort", "relevance")
+  .header("Accept", "application/json")
   .end(function (result) {
-  console.log(result.status, result.headers, result.body);
-    res.redirect('/home');
+    console.log(result.status, result.headers, result.body);
+    var indexImageURL = req.body.indexImageURL
+    var palette = imageUrlPalette.hexValues(indexImageURL, result.body.tags)
+    // Find Palette Database
+    paletteCollection.find({}, function(err, palettes){
+      res.render('index', {title: '24 Palettes' , colors: palette, image: req.body.indexImageURL });
+    });
   });
 });
+
+// ********************* HOME PAGE API CALL ************************
+// router.post('/directory' , function(req,res,next){
+//   console.log(req.body);
+//   unirest.post("https://apicloud-colortag.p.mashape.com/tag-file.json")
+//   .header("X-Mashape-Key", key)
+//   .attach("image", fs.createReadStream(req.body.upload))
+//   .field("palette", "simple")
+//   .field("sort", "relevance")
+//   .end(function (result) {
+//   console.log(result.status, result.headers, result.body);
+//     res.redirect('/home');
+//   });
+// });
+
+// ************************* Directory URL API CALL **************************
+router.post('/uploadURL', function(req, res, next) {
+    console.log(req.body.imageURL);
+  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.imageURL)
+  .header("X-Mashape-Key", key)
+  .header("Accept", "application/json")
+  .end(function (result) {
+    console.log(result.status, result.headers, result.body);
+    // Find Palette Database
+    paletteCollection.find({}, function(err, palettes){
+      res.render('directory', {colors: result.body});
+    });
+  });
+});
+
 
 module.exports = router;

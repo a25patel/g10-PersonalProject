@@ -8,5 +8,10 @@ a {
 }
 
 li {
-  color: red; 
+  color: red;
+}
+
+.hex {
+  width: 60px;
+  height: 30px;
 }
