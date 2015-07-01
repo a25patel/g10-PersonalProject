@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db = require('monk')('localhost/colorPalettes');
+var userCollection = db.get('users')
 var paletteCollection = db.get('palettes')
 var bcrypt = require('bcryptjs');
 var unirest = require('unirest')
@@ -69,17 +70,17 @@ router.post('/create', function(req, res, next){
   } //ELSE
   else {
     // IF username already exists render errror
-    paletteCollection.find({}, function(err, palettes){
+    userCollection.find({}, function(err, users){
       var errorArray = [];
-      for(var i =0; i< palettes.length; i++){
+      for(var i =0; i< users.length; i++){
         if(req.body.newUsername.toUpperCase() === palettes[i].username.toUpperCase()){
           errorArray.push('Username ID already exists');
           res.render('', {title: '24 Palettes', errors: errorArray})
         }
       }
       // if errorArray OR palettes length is 0, insert new user info into database
-      if (errorArray.length === 0 || palettes.length === 0) {
-        paletteCollection.insert({
+      if (errorArray.length === 0 || users.length === 0) {
+        userCollection.insert({
           username: req.body.newUsername,
           password: bcrypt.hashSync(req.body.newPassword, 8)
         });
@@ -106,14 +107,14 @@ router.post('/login', function(req, res, next){
   if (array.length > 0){
     res.render('' , {title: '24 Palettes' , errors: array})
   } else {
-    paletteCollection.findOne({username:req.body.username}, function(err,palettes){
+    userCollection.findOne({username:req.body.username}, function(err,users){
       var array = [];
       // if username does not exist in database
-      if (!palettes){
+      if (!users){
         array.push('Username does not exist')
         res.render('', {title: '24 Palettes' , errors:array})
         // check to see if password matches
-      } else if(bcrypt.compareSync(req.body.password , palettes.password)){
+      } else if(bcrypt.compareSync(req.body.password , users.password)){
         res.cookie('currentUser' , req.body.username);
         res.redirect('/home');
       } else {
@@ -138,7 +139,7 @@ router.post('/indexUploadURL', function(req, res, next) {
   .end(function (result) {
     console.log(result.status, result.headers, result.body);
     var indexImageURL = req.body.indexImageURL
-    var palette = imageUrlPalette.hexValues(indexImageURL, result.body.tags)
+    var palette = imageUrlPalette.hexValues(indexImageURL, result.body)
     // Find Palette Database
     paletteCollection.find({}, function(err, palettes){
       res.render('index', {title: '24 Palettes' , colors: palette, image: req.body.indexImageURL });
@@ -174,6 +175,21 @@ router.get('/new' , function(req,res,next){
 router.post('/new' , function(req,res,next){
   res.redirect('/home/new');
 });
+
+// ************************* Insert new palette information in database ***************
+router.post('/homeUploadURL', function(req,res,next){
+  paletteCollection.insert({
+    username: req.cookies.currentUser,
+    name: req.body.paletteName,
+    URL: req.body.homeImageURL,
+    privacy: req.body.privacy,
+    sort: req.body.sort,
+    range: req.body.range,
+  })
+  console.log(req.body);
+  res.redirect('/home')
+});
+
 
 // ********************* HOME PAGE API CALL ************************
 // router.post('/directory' , function(req,res,next){
