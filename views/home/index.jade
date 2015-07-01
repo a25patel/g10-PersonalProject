@@ -2,10 +2,6 @@ extends ../layout
 
 block content 
   h1 You've Successfully Logged In!
-  
-  form(action='/upload' method='post')
-    div.uploadNew
-      h1 Upload an Image File 
-      input(type='file' id='newImage' name='newImage')
-      input(type='submit' id ='submit' value='upload') 
-       
+
+    
+  a(href='/new') Create New Palette

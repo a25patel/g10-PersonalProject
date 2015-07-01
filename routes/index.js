@@ -5,7 +5,7 @@ var paletteCollection = db.get('palettes')
 var bcrypt = require('bcryptjs');
 var unirest = require('unirest')
 var key = process.env.COLORTAG_API;
-
+// color.js function. puts all hex codes of colors into array and calls them through a for loop
 var imageUrlPalette = require('../public/javascripts/color.js')
 
 
@@ -34,7 +34,6 @@ router.get('/home', function(req,res,next){
 router.get('/directory', function(req,res,next){
   res.render('directory');
 })
-
 
 // ##################### INDEX PAGE FUNCTIONS ! ##############################
 
@@ -93,7 +92,6 @@ router.post('/create', function(req, res, next){
 });
 
 // ********************* Validations for LOGIN Page **************************
-
 router.post('/login', function(req, res, next){
   // Username cannot be blank
   var array = [];
@@ -126,6 +124,12 @@ router.post('/login', function(req, res, next){
   }
 });
 
+// ***************************** Logging Out ***************************
+router.get('/logout', function(req,res,next){
+  res.clearCookie('currentUser');
+  res.redirect('/');
+})
+
 // ************************* INDEX URL API CALL **************************
 router.post('/indexUploadURL', function(req, res, next) {
   unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.indexImageURL)
@@ -142,6 +146,35 @@ router.post('/indexUploadURL', function(req, res, next) {
   });
 });
 
+// ############################ DIRECTORY FUNCTIONS ##############################
+
+// ************************* Directory URL API CALL **************************
+router.post('/UploadURL', function(req, res, next) {
+  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.imageURL)
+  .header("X-Mashape-Key", key)
+  .header("Accept", "application/json")
+  .end(function (result) {
+    console.log(result.status, result.headers, result.body);
+    var imageURL = req.body.imageURL
+    var palette = imageUrlPalette.hexValues(imageURL, result.body.tags)
+    // Find Palette Database
+    paletteCollection.find({}, function(err, palettes){
+      res.render('directory', {title: '24 Palettes' , colors: palette, image: req.body.imageURL });
+    });
+  });
+});
+
+// ############################### USER HOME FUNCTIONS ############################
+
+// *********************** GET NEW.JADE WITH FILE ************************************
+router.get('/new' , function(req,res,next){
+  res.render('home/new');
+});
+
+router.post('/new' , function(req,res,next){
+  res.redirect('/home/new');
+});
+
 // ********************* HOME PAGE API CALL ************************
 // router.post('/directory' , function(req,res,next){
 //   console.log(req.body);
@@ -155,21 +188,5 @@ router.post('/indexUploadURL', function(req, res, next) {
 //     res.redirect('/home');
 //   });
 // });
-
-// ************************* Directory URL API CALL **************************
-router.post('/uploadURL', function(req, res, next) {
-    console.log(req.body.imageURL);
-  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.imageURL)
-  .header("X-Mashape-Key", key)
-  .header("Accept", "application/json")
-  .end(function (result) {
-    console.log(result.status, result.headers, result.body);
-    // Find Palette Database
-    paletteCollection.find({}, function(err, palettes){
-      res.render('directory', {colors: result.body});
-    });
-  });
-});
-
 
 module.exports = router;

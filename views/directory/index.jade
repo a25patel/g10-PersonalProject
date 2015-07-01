@@ -16,6 +16,8 @@ block content
       label(for='password') Password:  
       input(type='password' id='password' name='password' placeholder='********') 
       input(type='submit' id ='submit' value='Login') 
+    div.logout
+      a(href = '/logout') Logout
 
   
   form(action='/create' method='post')
@@ -28,3 +30,11 @@ block content
       label(for='confirm') Confirm Password: 
       input(type='password' id='confirm' name='confirm' placeholder='********') 
       input(type='submit' id ='submit' value='Create Account')
+      
+  if colors
+    div.indexImage 
+      img(src = '#{image}')
+    div.indexImagePalette 
+      for color in colors 
+        div.hex(style={background: color })
+      p #{colors}

@@ -15,3 +15,23 @@ li {
   width: 60px;
   height: 30px;
 }
+
+.rectangle{
+  display: inline-block;
+  border: 1px white solid;
+	width: 100px;
+	height: 200px;
+	background: #cccccc;
+  border-radius: 10px 30px;
+}
+
+ /*Gray Scale
+#eeeeee
+#dddddd
+#cccccc
+#bbbbbb
+#9a9a9a*/
+
+.newPalette{
+  display: inline-block;
+}

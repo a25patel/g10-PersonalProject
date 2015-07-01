@@ -7,7 +7,7 @@ module.exports = {
         array.push(result[i].color);
       }
     } else {
-      array.push('Sorry this image is too big to extract color from!');
+      array.push('Sorry this image is too big to extract color from! ( < 8192 X 8192 )');
     }
     return array;
   }

@@ -1,0 +1,53 @@
+extends ../layout 
+
+block content 
+  h1 New Palette!
+  
+  //- form(action='/uploadNewFile' method='post')
+  //-   div.uploadNew
+  //-     h3 Upload a new image file 
+  //-     input(type='file' id='newImage' name='newImage')
+  //-     input(type='submit' id ='submit' value='upload') 
+      
+  
+  form(action='/homeUploadURL' method='post')
+    div.name 
+      label(for='name') Name your Palette: 
+      input(type='text' size='35' id='name')
+      
+    div.homeUploadURL
+      h3 Upload a new image URL
+      input(type='text' id='homeImageURL' name='homeImageURL' size ='55')
+      input(type='submit' id ='submit' value='upload')
+      
+    div.privacy 
+      input(type='checkbox' id='privacy' name='privacy')
+      label(for='privacy') Private Image
+        h5 *Public images will appear for anyone to see under database 
+    
+    div.sort 
+      label(for = 'sort') Relevance (objects) 
+      input(type='radio' id='sort' name='sort' value='relevance')
+      label(for = 'sort') Weighted (overall)
+      input(type='radio' id='sort' name='sort' value = 'weighted')
+    
+    div.range
+      select(id='range' name='range')
+        option(value = 'simple') Simple (Basic Colors 1-10)
+        option(value = 'W3C') W3C (CSS Colors 10-20)
+        option(value = 'precise') Precise (20+)
+    
+    div.newPalette
+      div.fa.fa-minus 
+           
+      div.rectangle
+      div.rectangle
+      div.rectangle
+      div.rectangle
+      div.rectangle    
+      
+      div.fa.fa-plus
+  
+    div.save 
+      input(type='submit' id='save' name='save' value='Save My Palette')
+      a(href='/delete') Discard Palette
