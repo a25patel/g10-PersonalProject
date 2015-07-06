@@ -1,7 +1,30 @@
 extends ../layout 
 
 block content 
-  h1 You've Successfully Logged In!
-
-    
+  h1 You've Successfully Logged In!  
   a(href='/new') Create New Palette
+  table
+  thead
+    tr
+      th Name
+      th Image
+      th Palette
+      th Private 
+  tbody
+    if colors
+      div.homeImage
+        img(src='#{image}' width='450px')
+      div.homePalette
+        for color in colors
+          td= color.name
+          td=color.Private
+          div.hex(style={background:color})
+        p #{colors}
+
+            //- if colors
+            //-   div.indexImage 
+            //-     img(src = '#{image}')
+            //-   div.indexImagePalette 
+            //-     for color in colors 
+            //-       div.hex(style={background: color })
+            //-     p #{colors}

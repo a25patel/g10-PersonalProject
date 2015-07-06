@@ -1,54 +1,33 @@
 extends ../layout 
 
-script(src="../../public/javascripts/preview.js")
 block content 
   h1 New Palette!
-
-  //- form(action='/uploadNewFile' method='post')
-  //-   div.uploadNew
-  //-     h3 Upload a new image file 
-  //-     input(type='file' id='newImage' name='newImage')
-  //-     input(type='submit' id ='submit' value='upload') 
-      
   
   form(action='/homeUploadURL' method='post')
-    div.name 
-      label(for='paletteName') Name your Palette: 
-      input(type='text' size='35' id='paletteName' name='paletteName')
-      
     div.homeUploadURL
       h3 Upload a new image URL
-      input(type='text' id='homeImageURL' name='homeImageURL' size ='75')
-      img#imageThumbnail(src=)
+      input(type='text' id='homeImageURL' name='homeImageURL' size ='75')      
+      
+    div.name 
+      label(for='paletteName') Name your Palette: 
+      input(type='text' size='35' id='paletteName' name='paletteName')  
       
     div.privacy 
       input(type='checkbox' id='privacy' name='privacy' value='on')
       label(for='privacy') Private Image
-        h5 *Public images will appear for anyone to see under database 
-    
-    div.sort 
-      label(for = 'sort') Relevance (objects) 
-      input(type='radio' id='sort' name='sort' value='relevance')
-      label(for = 'sort') Weighted (overall)
-      input(type='radio' id='sort' name='sort' value = 'weighted')
-    
-    div.range
-      select(id='range' name='range')
-        option(value = 'simple') Simple (Basic Colors 1-10)
-        option(value = 'W3C') W3C (CSS Colors 10-20)
-        option(value = 'precise') Precise (20+)
-    
-    div.newPalette
-      div.fa.fa-minus 
-     
-      div.rectangle
-      div.rectangle
-      div.rectangle
-      div.rectangle
-      div.rectangle    
-      
-      div.fa.fa-plus
-  
+        h5 *Public images will appear for anyone to see under database     
+                
     div.save 
       button(type='submit' id='save') Save My Palette
       a(href='/delete') Discard Palette
+      
+  //- if colors
+  //-   div.indexImage 
+  //-     img(src = '#{image}')
+  //-   div.indexImagePalette 
+  //-     for color in colors 
+  //-       div.hex(style={background: color })
+  //-     p #{colors}
+  
+  script(src='/javascripts/preview.js' type='text/javascript')
+  script(src='/javascripts/palette.js' type='text/javascript')

@@ -150,14 +150,14 @@ router.post('/indexUploadURL', function(req, res, next) {
 // ############################ DIRECTORY FUNCTIONS ##############################
 
 // ************************* Directory URL API CALL **************************
-router.post('/UploadURL', function(req, res, next) {
+router.post('/uploadURL', function(req, res, next) {
   unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.imageURL)
   .header("X-Mashape-Key", key)
   .header("Accept", "application/json")
   .end(function (result) {
     console.log(result.status, result.headers, result.body);
     var imageURL = req.body.imageURL
-    var palette = imageUrlPalette.hexValues(imageURL, result.body.tags)
+    var palette = imageUrlPalette.hexValues(imageURL, result.body)
     // Find Palette Database
     paletteCollection.find({}, function(err, palettes){
       res.render('directory', {title: '24 Palettes' , colors: palette, image: req.body.imageURL });
@@ -176,23 +176,67 @@ router.post('/new' , function(req,res,next){
   res.redirect('/home/new');
 });
 
-// ************************* Insert new palette information in database ***************
-router.post('/homeUploadURL', function(req,res,next){
-  paletteCollection.insert({
-    username: req.cookies.currentUser,
-    name: req.body.paletteName,
-    URL: req.body.homeImageURL,
-    privacy: req.body.privacy,
-    sort: req.body.sort,
-    range: req.body.range,
-  })
-  console.log(req.body);
-  res.redirect('/home')
+
+// **************************** HOME API CALL *****************************
+router.post('/homeUploadURL', function(req, res, next) {
+  unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.homeImageURL)
+  .header("X-Mashape-Key", key)
+  .header("Accept", "application/json")
+  .end(function (result) {
+    console.log(result.status, result.headers, result.body);
+    var imageURL = req.body.homeImageURL
+    var palette = imageUrlPalette.hexValues(imageURL, result.body)
+    console.log(palette);
+    // Find Palette Database
+    paletteCollection.insert({
+      username: req.cookies.currentUser,
+      name: req.body.paletteName,
+      URL: req.body.homeImageURL,
+      privacy: req.body.privacy,
+      colors: palette
+    });
+    paletteCollection.find({}, function(err, palettes){
+      res.render('home', {title: '24 Palettes' , colors: palette, image: req.body.homeImageURL });
+    });
+  });
 });
+
+// ************************* Insert new palette information in database ***************
+
+// router.post('/information', function(req,res,next){
+//   paletteCollection.insert({
+//     username: req.cookies.currentUser,
+//     name: req.body.paletteName,
+//     URL: req.body.homeImageURL,
+//     privacy: req.body.privacy,
+//   });
+//   console.log(req.body);
+//   res.redirect('/home')
+// });
+
+// // *********************** XML Request *************************
+// router.post('/getPalette', function(req,res,next){
+//   unirest.get("https://apicloud-colortag.p.mashape.com/tag-url.json?palette=simple&sort=relevance&url=" + req.body.image)
+//   .header("X-Mashape-Key", key)
+//   .header("Accept", "application/json")
+//   .field("palette", req.body.range)
+//   .field("sort", req.body.sort)
+//   .end(function (result) {
+//     console.log(result.status, result.headers, result.body);
+//     var imageURL = req.body.image
+//     var palette = imageUrlPalette.hexValues(imageURL, result.body)
+//     console.log(palette);
+//     var output = {title: '24 Palettes', colors: palette };
+//     paletteCollection.find({}, function(err, palettes){
+//       res.json(JSON.stringify(output));
+//       // res.render('home/new', {title: '24 Palettes', colors: palette });
+//     });
+//   });
+// });
 
 
 // ********************* HOME PAGE API CALL ************************
-// router.post('/directory' , function(req,res,next){
+// router.post('/directory' , function(req,res,nzext){
 //   console.log(req.body);
 //   unirest.post("https://apicloud-colortag.p.mashape.com/tag-file.json")
 //   .header("X-Mashape-Key", key)

@@ -1,9 +1,7 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  
+  h1= title  
   p
     a(href = '/directory' id='directory') Directory 
 
@@ -20,7 +18,7 @@ block content
       
   form(action='/login' method='post')
     div.login
-      h1 Login 
+      h2 Login 
       label(for='username') Username:  
       input(type='text' id='username' name='username' size='35' placeholder='name1234')
       label(for='password') Password:  
@@ -30,7 +28,7 @@ block content
   
   form(action='/create' method='post')
     div.createAcct 
-      h1 Create a New Account 
+      h2 Create a New Account 
       label(for='newUsername') Username: 
       input(type='text' id='newUsername' name='newUsername' size='35' placeholder='name1234')
       label(for='newPassword') Password:
@@ -42,8 +40,8 @@ block content
   
   if colors
     div.indexImage 
-      img(src = '#{image}')
+      img(src = '#{image}' width='450px')
     div.indexImagePalette 
       for color in colors 
-        div.hex(style={background: color })
+        div.hex(style={background: color})
       p #{colors}

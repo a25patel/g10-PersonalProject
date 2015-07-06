@@ -13,7 +13,8 @@ li {
 
 .hex {
   width: 60px;
-  height: 30px;
+  height: 40px;
+  display: inline-block;
 }
 
 .rectangle{
@@ -34,4 +35,20 @@ li {
 
 .newPalette{
   display: inline-block;
+}
+
+p {
+  font-size: 16px;
+}
+
+h2 {
+  font-family: helvetica;
+}
+
+.uploadIndexURL{
+  margin: 0 auto ; 
+}
+
+.login {
+  padding: 2px;
 }
