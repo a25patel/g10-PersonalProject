@@ -73,7 +73,7 @@ router.post('/create', function(req, res, next){
     userCollection.find({}, function(err, users){
       var errorArray = [];
       for(var i =0; i< users.length; i++){
-        if(req.body.newUsername.toUpperCase() === palettes[i].username.toUpperCase()){
+        if(req.body.newUsername.toUpperCase() === users[i].username.toUpperCase()){
           errorArray.push('Username ID already exists');
           res.render('', {title: '24 Palettes', errors: errorArray})
         }
